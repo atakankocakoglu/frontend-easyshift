@@ -4,17 +4,23 @@ import { IconType } from 'react-icons';
 interface NavItemProps {
     icon: IconType;
     label: string;
+    isActive: boolean;
+    onClick: () => void;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label }) => {
+const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, isActive, onClick }) => {
     return (
         <a
             href="#"
-            className="flex items-center text-white hover:bg-white hover:text-[#0084D4] rounded-[5px] px-4 py-2 transition duration-300 border border-transparent hover:border-[#0084D4]"
+            onClick={onClick}
+            className={`flex items-center p-2 rounded-md transition-colors duration-200 
+                ${isActive ? 'bg-white text-[#0084D4]' : 'text-white hover:bg-white hover:text-[#0084D4]'} 
+            `}
         >
             <Icon className="mr-2" /> {label}
         </a>
     );
-}
+};
+
 
 export default NavItem;

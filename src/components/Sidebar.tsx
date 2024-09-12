@@ -1,9 +1,17 @@
 import { FaTachometerAlt, FaCalendarAlt, FaBriefcase, FaUsers, FaBuilding, FaUser } from 'react-icons/fa';
-import NavItem from './NavItem';
-import DropdownMenuComponent from './DropdownMenu'; // Import the dropdown menu component
-import '/public/css/Sidebar.css';
+import NavItem from './NavItem'; // Import the NavItem component
+import DropdownMenuComponent from './DropdownMenu';
+import {useState} from "react"; // Import the dropdown menu component
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+    onNavItemClick: (page: string) => void;
+    activePage: string;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onNavItemClick, activePage }) => {
+
+    const [userName] = useState('Atakan Kocakoglu');
+
     return (
         <div className="flex flex-col h-screen w-64 p-4 bg-[#0084D4]">
             {/* Logo */}
@@ -14,29 +22,49 @@ const Sidebar: React.FC = () => {
 
             {/* Menu Items */}
             <nav className="flex flex-col">
-                <NavItem icon={FaTachometerAlt} label="Dashboard" />
-                <NavItem icon={FaCalendarAlt} label="Rooster" />
-                <NavItem icon={FaBriefcase} label="Verlof" />
-                <NavItem icon={FaUsers} label="Werknemers" />
-                <NavItem icon={FaBuilding} label="Bedrijf" />
+                <NavItem
+                    icon={FaTachometerAlt}
+                    label="Dashboard"
+                    isActive={activePage === 'Dashboard'}
+                    onClick={() => onNavItemClick('Dashboard')}
+                />
+                <NavItem
+                    icon={FaCalendarAlt}
+                    label="Rooster"
+                    isActive={activePage === 'Rooster'}
+                    onClick={() => onNavItemClick('Rooster')}
+                />
+                <NavItem
+                    icon={FaBriefcase}
+                    label="Verlof"
+                    isActive={activePage === 'Verlof'}
+                    onClick={() => onNavItemClick('Verlof')}
+                />
+                <NavItem
+                    icon={FaUsers}
+                    label="Werknemers"
+                    isActive={activePage === 'Werknemers'}
+                    onClick={() => onNavItemClick('Werknemers')}
+                />
+                <NavItem
+                    icon={FaBuilding}
+                    label="Bedrijf"
+                    isActive={activePage === 'Bedrijf'}
+                    onClick={() => onNavItemClick('Bedrijf')}
+                />
             </nav>
 
-            {/* Divider and Account Section */}
-            <div className="flex flex-col mt-auto">
-                {/* Divider directly above account section */}
-                <hr className="border-white" />
-
-                {/* Account Section */}
-                <div className="flex items-center justify-between px-4 py-2 text-white">
-                    <div className="flex items-center space-x-2">
-                        <FaUser />
-                        <span>John Doe</span>
-                    </div>
+            {/* Bottom section */}
+            <div className="mt-auto">
+                <hr className="border-white mb-4" />
+                <div className="flex items-center justify-between text-white">
+                    <FaUser className="mr-2" />
+                    <span className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[130px]">{userName}</span>
                     <DropdownMenuComponent />
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default Sidebar;

@@ -6,6 +6,8 @@ function Login() {
 
     const handleLogin = () => {
         // Hier kun je ook authenticatielogica toevoegen
+        const userId = '123';
+        sessionStorage.setItem("userId", userId);
         navigate('/home'); // Navigeer naar de Home pagina
     }
 
