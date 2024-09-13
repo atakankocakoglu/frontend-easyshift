@@ -1,4 +1,4 @@
-import DashboardContent from '../components/DashboardContent';
+import DashboardContent from '@/pages/content/DashboardContent.tsx';
 
 function Dashboard() {
     return (

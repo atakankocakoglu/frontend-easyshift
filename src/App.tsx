@@ -10,7 +10,7 @@ const App: React.FC = () => {
             <div className="content">
                 <Routes>
                     <Route path="/" element={<Login />} />
-                    {/* Protect the Home route */}
+                    <Route path="/login" element={<Login />} />
                     <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
                 </Routes>
             </div>
