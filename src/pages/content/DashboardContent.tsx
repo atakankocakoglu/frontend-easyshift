@@ -1,5 +1,5 @@
-import BarChartComponent from '@/components/BarChartComponent.tsx';
-import RadarChartComponent from '@/components/RadarChartComponent.tsx';
+import BarChartComponent from '@/components/chart/BarChartComponent.tsx';
+import RadarChartComponent from '@/components/chart/RadarChartComponent.tsx';
 
 function DashboardContent() {
     return (

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import PendingRequests from "@/components/PendingRequests";
-import ProcessedRequests from "@/components/ProcessedRequests";
+import PendingRequests from "@/components/verlof/PendingRequests.tsx";
+import ProcessedRequests from "@/components/verlof/ProcessedRequests.tsx";
 
 interface Request {
     id: number;

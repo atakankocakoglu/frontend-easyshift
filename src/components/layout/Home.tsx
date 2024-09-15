@@ -1,10 +1,10 @@
 import  { useState } from 'react';
-import Sidebar from './Sidebar';
-import Dashboard from '../pages/Dashboard.tsx';
-import Rooster from '../pages/Rooster.tsx';
-import Verlof from '../pages/Verlof.tsx';
-import Werknemers from '../pages/Werknemers.tsx';
-import Bedrijf from '../pages/Bedrijf.tsx';
+import Sidebar from './Sidebar.tsx';
+import Dashboard from '../../pages/Dashboard.tsx';
+import Rooster from '../../pages/Rooster.tsx';
+import Verlof from '../../pages/Verlof.tsx';
+import Werknemers from '../../pages/Werknemers.tsx';
+import Bedrijf from '../../pages/Bedrijf.tsx';
 
 function Home() {
     const [activePage, setActivePage] = useState('Dashboard');

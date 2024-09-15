@@ -1,5 +1,5 @@
 import React from 'react';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu.tsx";
 import { FaChevronDown, FaCog, FaSignOutAlt } from 'react-icons/fa'; // Import icons
 import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 

@@ -1,6 +1,6 @@
 import { FaTachometerAlt, FaCalendarAlt, FaBriefcase, FaUsers, FaBuilding, FaUser } from 'react-icons/fa';
-import NavItem from './NavItem'; // Import the NavItem component
-import DropdownMenuComponent from './DropdownMenu';
+import NavItem from './NavItem.tsx'; // Import the NavItem component
+import DropdownMenuComponent from './DropdownMenu.tsx';
 import {useState} from "react"; // Import the dropdown menu component
 
 interface SidebarProps {
@@ -16,7 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavItemClick, activePage }) => {
         <div className="flex flex-col h-screen w-64 p-4 bg-[#0084D4]">
             {/* Logo */}
             <div className="flex items-center justify-center mb-4">
-                <img src="public/EasyShift_Transparant.png" alt="logo" className="w-27 h-25" />
+                <img src="../../../public/EasyShift_Transparant.png" alt="logo" className="w-27 h-25" />
             </div>
             <hr className="border-white mb-4" />
 

@@ -1,8 +1,8 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login';
-import Home from './components/Home';
-import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login.tsx';
+import Home from './components/layout/Home.tsx';
+import ProtectedRoute from './components/security/ProtectedRoute.tsx';
 
 const App: React.FC = () => {
     return (

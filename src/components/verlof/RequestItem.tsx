@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"; // Veronderstel dat je een Button component hebt
+import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog.tsx"
+import { Button } from "@/components/ui/button.tsx";
 
 interface Request {
     id: number;

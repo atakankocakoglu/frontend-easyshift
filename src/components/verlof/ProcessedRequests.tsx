@@ -1,4 +1,4 @@
-import RequestItem from "@/components/RequestItem";
+import RequestItem from "@/components/verlof/RequestItem.tsx";
 
 interface Request {
     id: number;
