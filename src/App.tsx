@@ -6,6 +6,7 @@ import ProtectedRoute from './components/security/ProtectedRoute.tsx';
 
 const App: React.FC = () => {
     return (
+        //app
         <Router>
             <div className="content">
                 <Routes>
