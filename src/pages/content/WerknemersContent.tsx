@@ -1,28 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface Werknemer {
     id: number;
-    naam: string;
+    name: string;
     email: string;
-    telefoon: string;
+    phoneNumber: string;
 }
 
-const werknemers: Werknemer[] = [
-    { id: 1, naam: "Atakan Kocakoglu", email: "atakankocakoglu@gmail.com", telefoon: "0612345678" },
-    { id: 2, naam: "Ties Vreeswijk", email: "tiesvreeswijk@gmail.com", telefoon: "0619876543" },
-    { id: 3, naam: "Sjors Klaassen", email: "sjorsklaassen@gmail.com", telefoon: "0623456789" },
-    { id: 4, naam: "Luc Lammers", email: "luclammers@gmail.com", telefoon: "0612345678" },
-];
-
 function WerknemersContent() {
+    const [werknemers, setWerknemers] = useState<Werknemer[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const werknemersPerPage = 5;
 
+    useEffect(() => {
+        async function loadEmployeeData() {
+            const result = await fetch("http://localhost:5295/api/Employees");
+            const data = await result.json();
+            setWerknemers(data);
+        }
+
+        loadEmployeeData();
+    }, []);
+
     // Filter de werknemers op basis van de zoekterm
     const filteredWerknemers = werknemers.filter((werknemer) =>
-        werknemer.naam.toLowerCase().includes(searchTerm.toLowerCase())
+        werknemer.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Bereken de huidige werknemers om weer te geven
@@ -70,9 +74,9 @@ function WerknemersContent() {
                     {currentWerknemers.length > 0 ? (
                         currentWerknemers.map((werknemer) => (
                             <TableRow key={werknemer.id} className="border-b">
-                                <TableCell className="p-4">{werknemer.naam}</TableCell>
+                                <TableCell className="p-4">{werknemer.name}</TableCell>
                                 <TableCell className="p-4">{werknemer.email}</TableCell>
-                                <TableCell className="p-4">{werknemer.telefoon}</TableCell>
+                                <TableCell className="p-4">{werknemer.phoneNumber}</TableCell>
                             </TableRow>
                         ))
                     ) : (
