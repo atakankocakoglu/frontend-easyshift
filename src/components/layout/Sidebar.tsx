@@ -1,17 +1,15 @@
 import { FaTachometerAlt, FaCalendarAlt, FaBriefcase, FaUsers, FaBuilding, FaUser } from 'react-icons/fa';
 import NavItem from './NavItem.tsx'; // Import the NavItem component
 import DropdownMenuComponent from './DropdownMenu.tsx';
-import {useState} from "react"; // Import the dropdown menu component
+import { FC } from 'react';
 
 interface SidebarProps {
     onNavItemClick: (page: string) => void;
     activePage: string;
+    userName: string; // Add this line
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onNavItemClick, activePage }) => {
-
-    const [userName] = useState('Atakan Kocakoglu');
-
+const Sidebar: FC<SidebarProps> = ({ onNavItemClick, activePage, userName }) => {
     return (
         <div className="flex flex-col h-screen w-64 p-4 bg-[#0084D4]">
             {/* Logo */}

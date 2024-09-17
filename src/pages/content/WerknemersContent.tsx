@@ -16,7 +16,7 @@ function WerknemersContent() {
 
     useEffect(() => {
         async function loadEmployeeData() {
-            const result = await fetch("http://localhost:5295/api/Employees");
+            const result = await fetch("https://localhost:44355/api/Employees");
             const data = await result.json();
             setWerknemers(data);
         }
