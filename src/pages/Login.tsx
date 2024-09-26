@@ -4,11 +4,31 @@ import { useNavigate } from 'react-router-dom';
 function Login() {
     const navigate = useNavigate();
 
-    const handleLogin = () => {
-        // Hier kun je ook authenticatielogica toevoegen
-        const userId = '123';
-        sessionStorage.setItem("userId", userId);
-        navigate('/home'); // Navigeer naar de Home pagina
+    const handleLogin = async (event: React.FormEvent) => {
+        event.preventDefault();
+        try {
+            const response = await fetch('http://localhost:5295/api/Admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: (event.target as HTMLFormElement).email.value,
+                    password: (event.target as HTMLFormElement).password.value,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            const userId = data.id;
+            sessionStorage.setItem("userId", userId);
+            navigate('/home');
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
     }
 
     return (
