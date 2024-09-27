@@ -19,7 +19,6 @@ function Home() {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
-                            // Voeg authenticatie headers toe indien nodig
                         },
                     });
 
@@ -57,7 +56,7 @@ function Home() {
 
     return (
         <div className="flex h-screen">
-            <Sidebar activePage={activePage} onNavItemClick={setActivePage} userName={userName} />
+            <Sidebar activePage={activePage} onNavItemClick={setActivePage} userName={userName}/>
             <div className="flex-1 overflow-y-auto p-6">
                 {renderContent()}
             </div>

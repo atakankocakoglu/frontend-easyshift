@@ -1,40 +1,15 @@
 import { FaTachometerAlt, FaCalendarAlt, FaBriefcase, FaUsers, FaBuilding, FaUser } from 'react-icons/fa';
 import NavItem from './NavItem.tsx'; // Import the NavItem component
 import DropdownMenuComponent from './DropdownMenu.tsx';
-import {useEffect, useState} from "react"; // Import the dropdown menu component
 
+// src/components/layout/Sidebar.tsx
 interface SidebarProps {
     onNavItemClick: (page: string) => void;
     activePage: string;
+    userName: string; // Add userName prop
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onNavItemClick, activePage }) => {
-
-    const [userName, setUserName] = useState('Geen naam');
-
-    useEffect(() => {
-        const fetchUserName = async () => {
-            const userId = sessionStorage.getItem('userId');
-            if (userId) {
-                try {
-                    const response = await fetch(`http://localhost:5295/api/Admin/${userId}`);
-                    console.log('Response status:', response.status);
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Error response:', errorText);
-                        throw new Error(`Network response was not ok: ${response.statusText}`);
-                    }
-                    const data = await response.json();
-                    setUserName(data.name);
-                } catch (error) {
-                    console.error('There was a problem with the fetch operation:', error);
-                }
-            }
-        };
-
-        fetchUserName();
-    }, []);
-
+const Sidebar: React.FC<SidebarProps> = ({ onNavItemClick, activePage, userName }) => {
     return (
         <div className="flex flex-col h-screen w-64 p-4 bg-[#0084D4]">
             {/* Logo */}
