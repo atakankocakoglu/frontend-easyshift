@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaPlus } from 'react-icons/fa'; // Import the Plus icon
 import RoosterHeader from '@/components/rooster/RoosterHeader';
 import RoosterNavigation from '@/components/rooster/RoosterNavigation';
+import TimeModal from '@/components/rooster/TimeModal';
 
 // Functie om de huidige week te berekenen
 function getCurrentWeek(date: Date): number {
@@ -27,6 +28,14 @@ const RoosterContent: React.FC = () => {
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [dateRange, setDateRange] = useState<string>(getWeekDateRange(new Date()));
     const [employees] = useState<string[]>(["Atakan", "Ties", "Sjors", "Luc", "Zavid", "Keke"]);
+
+    // Modal state
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+    // State voor werktijden
+    const [workTimes, setWorkTimes] = useState<{ [key: string]: { [key: string]: string } }>({});
 
     useEffect(() => {
         setDateRange(getWeekDateRange(currentDate));
@@ -58,6 +67,29 @@ const RoosterContent: React.FC = () => {
         return date.getDate(); // Get the day of the month
     });
 
+    const openModal = (employee: string, date: string) => {
+        setSelectedEmployee(employee);
+        setSelectedDate(date);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleSubmit = (startTime: string, endTime: string) => {
+        if (selectedEmployee && selectedDate) {
+            setWorkTimes((prevWorkTimes) => ({
+                ...prevWorkTimes,
+                [selectedEmployee]: {
+                    ...prevWorkTimes[selectedEmployee],
+                    [selectedDate]: `${startTime} - ${endTime}`,
+                },
+            }));
+        }
+        closeModal();
+    };
+
     return (
         <div className="flex flex-col p-4">
             <div className="flex justify-between items-center mb-4">
@@ -73,7 +105,7 @@ const RoosterContent: React.FC = () => {
             </div>
             <table className="min-w-full border-collapse border border-gray-300">
                 <thead>
-                <tr className="bg-[#DBDBDB]">
+                <tr className="bg-[#0084D4] text-white">
                     <th className="border border-gray-300 p-4 w-40 text-left">Werknemers</th>
                     {weekdays.map((day, index) => (
                         <th key={index} className="border border-gray-300 p-4 w-32 text-center">
@@ -86,21 +118,35 @@ const RoosterContent: React.FC = () => {
                 {employees.map((employee, index) => (
                     <tr key={index}>
                         <td className="border border-gray-300 p-4">{employee}</td>
-                        {weekdays.map((_, dayIndex) => (
-                            <td
-                                key={dayIndex}
-                                className="border border-gray-300 p-4 text-center relative hover:bg-[#DBDBDB] cursor-pointer transition duration-300"
-                            >
-                                <span
-                                    className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition duration-300">
-                                    <FaPlus className="text-gray-600"/>
-                                </span>
-                            </td>
-                        ))}
+                        {weekdays.map((day, dayIndex) => {
+                            const dateKey = `${day} ${weekDates[dayIndex]}`;
+                            return (
+                                <td
+                                    key={dayIndex}
+                                    className="border border-gray-300 p-4 text-center relative hover:bg-[#DBDBDB] cursor-pointer transition duration-300"
+                                    onClick={() => openModal(employee, dateKey)}
+                                >
+                                    {workTimes[employee]?.[dateKey] || (
+                                        <span className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition duration-300">
+                                            <FaPlus className="text-gray-600"/>
+                                        </span>
+                                    )}
+                                </td>
+                            );
+                        })}
                     </tr>
                 ))}
                 </tbody>
             </table>
+
+            {/* Modal for time input */}
+            <TimeModal
+                employee={selectedEmployee || ''}
+                date={selectedDate || ''}
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                onSubmit={handleSubmit}
+            />
         </div>
     );
 };
