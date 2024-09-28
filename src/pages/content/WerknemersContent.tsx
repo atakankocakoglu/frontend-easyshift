@@ -16,9 +16,17 @@ function WerknemersContent() {
 
     useEffect(() => {
         async function loadEmployeeData() {
-            const result = await fetch("https://localhost:44355/api/Employees");
-            const data = await result.json();
-            setWerknemers(data);
+            try {
+                const result = await fetch("https://localhost:44355/api/Employees");
+                if (!result.ok) {
+                    throw new Error(`HTTP error! status: ${result.status}`);
+                }
+                const data = await result.json();
+                setWerknemers(data);
+            } catch (error) {
+                console.error("Failed to load employee data:", error);
+                // Handle the error appropriately, e.g., set an error state or show a message to the user
+            }
         }
 
         loadEmployeeData();

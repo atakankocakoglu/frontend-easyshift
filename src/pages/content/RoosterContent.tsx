@@ -25,7 +25,7 @@ function getWeekDateRange(date: Date): string {
 const RoosterContent: React.FC = () => {
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [dateRange, setDateRange] = useState<string>(getWeekDateRange(new Date()));
-    const [employees] = useState<string[]>(["Atakan", "Ties", "Sjors", "Luc", "Zavid", "Keke"]);
+    const [employees, setEmployees] = useState<string[]>([]);
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,6 +38,23 @@ const RoosterContent: React.FC = () => {
     useEffect(() => {
         setDateRange(getWeekDateRange(currentDate));
     }, [currentDate]);
+
+    useEffect(() => {
+        async function loadEmployeeData() {
+            try {
+                const result = await fetch("https://localhost:44355/api/Employees");
+                if (!result.ok) {
+                    throw new Error(`HTTP error! status: ${result.status}`);
+                }
+                const data = await result.json();
+                setEmployees(data.map((employee: { name: string }) => employee.name));
+            } catch (error) {
+                console.error("Failed to load employee data:", error);
+            }
+        }
+
+        loadEmployeeData();
+    }, []);
 
     const goToPreviousWeek = () => {
         setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 7)));
@@ -102,7 +119,6 @@ const RoosterContent: React.FC = () => {
                 />
             </div>
 
-            {/* Gebruik de nieuwe RoosterTable component */}
             <RoosterTable
                 employees={employees}
                 weekDates={weekDates}
