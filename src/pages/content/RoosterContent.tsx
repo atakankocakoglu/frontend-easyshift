@@ -25,7 +25,7 @@ function getWeekDateRange(date: Date): string {
 const RoosterContent: React.FC = () => {
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [dateRange, setDateRange] = useState<string>(getWeekDateRange(new Date()));
-    const [employees, setEmployees] = useState<string[]>([]);
+    const [employees, setEmployees] = useState<{ id: number; name: string }[]>([]);
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,7 +47,8 @@ const RoosterContent: React.FC = () => {
                     throw new Error(`HTTP error! status: ${result.status}`);
                 }
                 const data = await result.json();
-                setEmployees(data.map((employee: { name: string }) => employee.name));
+                // Zorg ervoor dat je zowel de id als de naam opslaat
+                setEmployees(data.map((employee: { id: number; name: string }) => ({ id: employee.id, name: employee.name })));
             } catch (error) {
                 console.error("Failed to load employee data:", error);
             }
@@ -55,6 +56,7 @@ const RoosterContent: React.FC = () => {
 
         loadEmployeeData();
     }, []);
+
 
     const goToPreviousWeek = () => {
         setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 7)));
@@ -76,14 +78,15 @@ const RoosterContent: React.FC = () => {
 
     // Array of weekdays and their corresponding dates
     const weekdays = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
+// Update the weekDates array to store full date strings in the format dd-MM-yyyy
     const weekDates = weekdays.map((_, index) => {
         const date = new Date(currentDate);
         date.setDate(date.getDate() - date.getDay() + index + 1); // Adjust to get the correct date
-        return date.getDate(); // Get the day of the month
+        return date.toLocaleDateString('nl-NL'); // Get the full date string in dd-MM-yyyy format
     });
 
-    const openModal = (employee: string, date: string) => {
-        setSelectedEmployee(employee);
+    const openModal = (employeeId: number, date: string) => {
+        setSelectedEmployee(employeeId.toString()); // Sla het id op als string
         setSelectedDate(date);
         setIsModalOpen(true);
     };
@@ -103,6 +106,24 @@ const RoosterContent: React.FC = () => {
             }));
         }
         closeModal();
+    };
+
+    const handleSendPlanning = async () => {
+        try {
+            const response = await fetch("https://localhost:44355/api/WorkTime", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(workTimes),
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            console.log("Planning successfully sent!");
+        } catch (error) {
+            console.error("Failed to send planning:", error);
+        }
     };
 
     return (
@@ -135,6 +156,14 @@ const RoosterContent: React.FC = () => {
                 onClose={closeModal}
                 onSubmit={handleSubmit}
             />
+
+            {/* Button to send the entire week's planning */}
+            <button
+                onClick={handleSendPlanning}
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
+            >
+                Verstuur planning
+            </button>
         </div>
     );
 };
