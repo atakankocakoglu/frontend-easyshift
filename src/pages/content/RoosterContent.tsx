@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlus } from 'react-icons/fa'; // Import the Plus icon
 import RoosterHeader from '@/components/rooster/RoosterHeader';
 import RoosterNavigation from '@/components/rooster/RoosterNavigation';
 import TimeModal from '@/components/rooster/TimeModal';
+import RoosterTable from '@/components/rooster/RoosterTable';
 
-// Functie om de huidige week te berekenen
 function getCurrentWeek(date: Date): number {
     const oneJan = new Date(date.getFullYear(), 0, 1);
     const numberOfDays = Math.floor((date.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000));
     return Math.ceil((numberOfDays + oneJan.getDay() + 1) / 7);
 }
 
-// Functie om het bereik van de week te berekenen
 function getWeekDateRange(date: Date): string {
     const currentDate = new Date(date);
-    const firstDayOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1)); // Maandag
-    const lastDayOfWeek = new Date(currentDate.setDate(firstDayOfWeek.getDate() + 6)); // Zondag
+    const firstDayOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
+    const lastDayOfWeek = new Date(currentDate.setDate(firstDayOfWeek.getDate() + 6));
     const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
 
     const startDate = firstDayOfWeek.toLocaleDateString('nl-NL', options);
@@ -103,41 +101,15 @@ const RoosterContent: React.FC = () => {
                     handleDateChange={handleDateChange}
                 />
             </div>
-            <table className="min-w-full border-collapse border border-gray-300">
-                <thead>
-                <tr className="bg-[#0084D4] text-white">
-                    <th className="border border-gray-300 p-4 w-40 text-left">Werknemers</th>
-                    {weekdays.map((day, index) => (
-                        <th key={index} className="border border-gray-300 p-4 w-32 text-center">
-                            {day} {weekDates[index]}
-                        </th>
-                    ))}
-                </tr>
-                </thead>
-                <tbody>
-                {employees.map((employee, index) => (
-                    <tr key={index}>
-                        <td className="border border-gray-300 p-4">{employee}</td>
-                        {weekdays.map((day, dayIndex) => {
-                            const dateKey = `${day} ${weekDates[dayIndex]}`;
-                            return (
-                                <td
-                                    key={dayIndex}
-                                    className="border border-gray-300 p-4 text-center relative hover:bg-[#DBDBDB] cursor-pointer transition duration-300"
-                                    onClick={() => openModal(employee, dateKey)}
-                                >
-                                    {workTimes[employee]?.[dateKey] || (
-                                        <span className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition duration-300">
-                                            <FaPlus className="text-gray-600"/>
-                                        </span>
-                                    )}
-                                </td>
-                            );
-                        })}
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+
+            {/* Gebruik de nieuwe RoosterTable component */}
+            <RoosterTable
+                employees={employees}
+                weekDates={weekDates}
+                weekdays={weekdays}
+                workTimes={workTimes}
+                openModal={openModal}
+            />
 
             {/* Modal for time input */}
             <TimeModal
