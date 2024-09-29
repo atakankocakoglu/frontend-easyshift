@@ -24,7 +24,8 @@ function getCurrentWeek(date: Date): number {
 
 function getWeekDateRange(date: Date): string {
     const currentDate = new Date(date);
-    const firstDayOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
+    const dayOfWeek = currentDate.getDay();
+    const firstDayOfWeek = new Date(currentDate.setDate(currentDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)));
     const lastDayOfWeek = new Date(currentDate.setDate(firstDayOfWeek.getDate() + 6));
     const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
 
@@ -33,6 +34,7 @@ function getWeekDateRange(date: Date): string {
 
     return `${startDate} - ${endDate}`;
 }
+
 
 const RoosterContent: React.FC = () => {
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -49,6 +51,9 @@ const RoosterContent: React.FC = () => {
 
     // State for modified work times (new or updated ones)
     const [modifiedWorkTimes, setModifiedWorkTimes] = useState<{ [key: string]: { [key: string]: string } }>({});
+
+    // Alert dialog state
+    const [isPastDateAlertOpen, setIsPastDateAlertOpen] = useState(false);
 
     useEffect(() => {
         setDateRange(getWeekDateRange(currentDate));
@@ -112,29 +117,28 @@ const RoosterContent: React.FC = () => {
     const handleDateChange = (date: Date | undefined) => {
         if (date) {
             setCurrentDate(date);
+            setDateRange(getWeekDateRange(date)); // Update de dateRange met de nieuwe date
+            console.log(date);
         }
     };
 
     const weekdays = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
     const weekDates = weekdays.map((_, index) => {
         const date = new Date(currentDate);
-        date.setDate(date.getDate() - date.getDay() + index + 1);
-        return date.toLocaleDateString('nl-NL');
+        const dayOfWeek = date.getDay();
+        const firstDayOfWeek = new Date(date.setDate(date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)));
+        firstDayOfWeek.setDate(firstDayOfWeek.getDate() + index);
+        return firstDayOfWeek.toLocaleDateString('nl-NL');
     });
 
     const openModal = (employeeId: number, date: string) => {
         const selectedDateObj = new Date(date.split('-').reverse().join('-')); // Date object
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
         // Voorkom bewerken voor oude data
         if (selectedDateObj < today) {
-            alert("You cannot add or modify times in the past.");
-            return;
-        }
-
-        // Voorkom bewerken als er al een werkrooster tijd uit de backend bestaat (maar niet voor modifiedWorkTimes)
-        if (workTimes[employeeId]?.[date]) {
-            alert("Work time for this date is already set and cannot be changed.");
+            setIsPastDateAlertOpen(true);
             return;
         }
 
@@ -251,6 +255,23 @@ const RoosterContent: React.FC = () => {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <AlertDialog open={isPastDateAlertOpen} onOpenChange={setIsPastDateAlertOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Onjuiste actie</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Je kunt geen tijden toevoegen of wijzigen voor de huidige datum of een datum in het verleden.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction className="bg-[#0084D4] hover:bg-[#00619B]" onClick={() => setIsPastDateAlertOpen(false)}>
+                            Oké
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
         </div>
     );
 };

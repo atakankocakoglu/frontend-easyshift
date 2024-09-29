@@ -13,13 +13,13 @@ interface RoosterNavigationProps {
 }
 
 const RoosterNavigation: React.FC<RoosterNavigationProps> = ({
-                                                                 goToPreviousWeek,
-                                                                 resetToCurrentWeek,
-                                                                 goToNextWeek,
-                                                                 dateRange,
-                                                                 currentDate,
-                                                                 handleDateChange,
-                                                             }) => {
+     goToPreviousWeek,
+     resetToCurrentWeek,
+     goToNextWeek,
+     dateRange,
+     currentDate,
+     handleDateChange,
+ }) => {
     return (
         <div className="flex items-center space-x-4">
             <div
