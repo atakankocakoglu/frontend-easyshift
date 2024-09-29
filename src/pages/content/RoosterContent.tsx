@@ -3,6 +3,18 @@ import RoosterHeader from '@/components/rooster/RoosterHeader';
 import RoosterNavigation from '@/components/rooster/RoosterNavigation';
 import TimeModal from '@/components/rooster/TimeModal';
 import RoosterTable from '@/components/rooster/RoosterTable';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 function getCurrentWeek(date: Date): number {
     const oneJan = new Date(date.getFullYear(), 0, 1);
@@ -111,16 +123,16 @@ const RoosterContent: React.FC = () => {
     });
 
     const openModal = (employeeId: number, date: string) => {
-        const selectedDateObj = new Date(date.split('-').reverse().join('-')); // Convert to Date object
+        const selectedDateObj = new Date(date.split('-').reverse().join('-')); // Date object
         const today = new Date();
 
-        // Prevent editing for past dates
+        // Voorkom bewerken voor oude data
         if (selectedDateObj < today) {
             alert("You cannot add or modify times in the past.");
             return;
         }
 
-        // Prevent editing if a work time already exists
+        // Voorkom bewerken als er al een werkrooster tijd uit de backend bestaat (maar niet voor modifiedWorkTimes)
         if (workTimes[employeeId]?.[date]) {
             alert("Work time for this date is already set and cannot be changed.");
             return;
@@ -131,22 +143,12 @@ const RoosterContent: React.FC = () => {
         setIsModalOpen(true);
     };
 
-
     const closeModal = () => {
         setIsModalOpen(false);
     };
 
     const handleSubmit = (startTime: string, endTime: string) => {
         if (selectedEmployee && selectedDate) {
-            setWorkTimes((prevWorkTimes) => ({
-                ...prevWorkTimes,
-                [selectedEmployee]: {
-                    ...prevWorkTimes[selectedEmployee],
-                    [selectedDate]: `${startTime} - ${endTime}`,
-                },
-            }));
-
-            // Voeg de nieuwe ingevoerde tijd toe aan de 'modifiedWorkTimes' zodat deze verzonden kan worden
             setModifiedWorkTimes((prevModifiedWorkTimes) => ({
                 ...prevModifiedWorkTimes,
                 [selectedEmployee]: {
@@ -156,12 +158,8 @@ const RoosterContent: React.FC = () => {
             }));
         }
 
-        // Sluit de modal na het invoeren
         closeModal();
     };
-
-
-
 
     const handleSendPlanning = async () => {
         try {
@@ -170,16 +168,37 @@ const RoosterContent: React.FC = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(modifiedWorkTimes), // Only send modified work times
+                body: JSON.stringify(modifiedWorkTimes), // Send modified work times
             });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             console.log("Planning successfully sent!");
+
+            // Merge modifiedWorkTimes into workTimes after a successful post request
+            setWorkTimes((prevWorkTimes) => {
+                const updatedWorkTimes = { ...prevWorkTimes };
+
+                Object.keys(modifiedWorkTimes).forEach((employeeId) => {
+                    if (!updatedWorkTimes[employeeId]) {
+                        updatedWorkTimes[employeeId] = {};
+                    }
+
+                    Object.keys(modifiedWorkTimes[employeeId]).forEach((dateKey) => {
+                        updatedWorkTimes[employeeId][dateKey] = modifiedWorkTimes[employeeId][dateKey];
+                    });
+                });
+
+                return updatedWorkTimes;
+            });
+
+            // Clear the modifiedWorkTimes state
+            setModifiedWorkTimes({});
         } catch (error) {
             console.error("Failed to send planning:", error);
         }
     };
+
 
     return (
         <div className="flex flex-col p-4">
@@ -200,6 +219,7 @@ const RoosterContent: React.FC = () => {
                 weekDates={weekDates}
                 weekdays={weekdays}
                 workTimes={workTimes}
+                modifiedWorkTimes={modifiedWorkTimes}
                 openModal={openModal}
             />
 
@@ -212,13 +232,25 @@ const RoosterContent: React.FC = () => {
                 onSubmit={handleSubmit}
             />
 
-            {/* Button to send the entire week's planning */}
-            <button
-                onClick={handleSendPlanning}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
-            >
-                Verstuur planning
-            </button>
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button className="mt-4 px-4 py-2 bg-[#0084D4] text-white rounded-lg shadow-md hover:bg-[#00619B]">
+                        Verstuur planning
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Ben je zeker dat je de planning wilt versturen?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Deze actie kan niet ongedaan worden gemaakt. Zodra je de planning verstuurt, kunnen ingevoerde tijden niet meer worden gewijzigd.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Annuleren</AlertDialogCancel>
+                        <AlertDialogAction className="bg-[#0084D4] hover:bg-[#00619B]" onClick={handleSendPlanning}>Versturen</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };
