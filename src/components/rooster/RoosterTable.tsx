@@ -29,16 +29,21 @@ const RoosterTable: React.FC<RoosterTableProps> = ({ employees, weekDates, weekd
                     <td className="border border-gray-300 p-4">{employee.name}</td>
                     {weekdays.map((_, dayIndex) => {
                         const dateKey = weekDates[dayIndex];
+                        const workTime = workTimes[employee.id]?.[dateKey];
+                        const isEditable = !workTime; // Only allow edits if no work time exists
+
                         return (
                             <td
                                 key={dayIndex}
-                                className="border border-gray-300 p-4 text-center relative hover:bg-[#DBDBDB] cursor-pointer transition duration-300"
-                                onClick={() => openModal(employee.id, dateKey)}
+                                className={`border border-gray-300 p-4 text-center relative transition duration-300 
+                                        ${isEditable ? 'hover:bg-[#DBDBDB] cursor-pointer' : 'bg-gray-100 cursor-not-allowed'}`}
+                                onClick={() => isEditable && openModal(employee.id, dateKey)} // Only trigger modal if editable
                             >
-                                {workTimes[employee.id]?.[dateKey] || (
-                                    <span className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition duration-300">
-                                        <FaPlus className="text-gray-600" />
-                                    </span>
+                                {workTime || (
+                                    <span className={`absolute inset-0 flex items-center justify-center 
+                                            ${isEditable ? 'opacity-0 hover:opacity-100 transition duration-300' : ''}`}>
+                                            {isEditable ? <FaPlus className="text-gray-600" /> : 'N/A'}
+                                        </span>
                                 )}
                             </td>
                         );
@@ -49,5 +54,6 @@ const RoosterTable: React.FC<RoosterTableProps> = ({ employees, weekDates, weekd
         </table>
     );
 };
+
 
 export default RoosterTable;

@@ -32,8 +32,11 @@ const RoosterContent: React.FC = () => {
     const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-    // State voor werktijden
+    // State for original work times (from the backend)
     const [workTimes, setWorkTimes] = useState<{ [key: string]: { [key: string]: string } }>({});
+
+    // State for modified work times (new or updated ones)
+    const [modifiedWorkTimes, setModifiedWorkTimes] = useState<{ [key: string]: { [key: string]: string } }>({});
 
     useEffect(() => {
         setDateRange(getWeekDateRange(currentDate));
@@ -47,7 +50,6 @@ const RoosterContent: React.FC = () => {
                     throw new Error(`HTTP error! status: ${result.status}`);
                 }
                 const data = await result.json();
-                // Zorg ervoor dat je zowel de id als de naam opslaat
                 setEmployees(data.map((employee: { id: number; name: string }) => ({ id: employee.id, name: employee.name })));
             } catch (error) {
                 console.error("Failed to load employee data:", error);
@@ -57,6 +59,31 @@ const RoosterContent: React.FC = () => {
         loadEmployeeData();
     }, []);
 
+    useEffect(() => {
+        async function loadWorkTimes() {
+            try {
+                const result = await fetch("https://localhost:44355/api/WorkTime/worktimes");
+                if (!result.ok) {
+                    throw new Error(`HTTP error! status: ${result.status}`);
+                }
+                const data = await result.json();
+                const transformedData = data.reduce((acc: { [key: number]: { [key: string]: string } }, item: any) => {
+                    const dateKey = new Date(item.date).toLocaleDateString('nl-NL');
+                    const formatTime = (time: string) => time.slice(0, 5); // Remove seconds
+                    if (!acc[item.employeeId]) {
+                        acc[item.employeeId] = {};
+                    }
+                    acc[item.employeeId][dateKey] = `${formatTime(item.startTime)} - ${formatTime(item.endTime)}`;
+                    return acc;
+                }, {});
+                setWorkTimes(transformedData); // Set the original work times
+            } catch (error) {
+                console.error("Failed to load work times:", error);
+            }
+        }
+
+        loadWorkTimes();
+    }, []);
 
     const goToPreviousWeek = () => {
         setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 7)));
@@ -76,20 +103,34 @@ const RoosterContent: React.FC = () => {
         }
     };
 
-    // Array of weekdays and their corresponding dates
     const weekdays = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
-// Update the weekDates array to store full date strings in the format dd-MM-yyyy
     const weekDates = weekdays.map((_, index) => {
         const date = new Date(currentDate);
-        date.setDate(date.getDate() - date.getDay() + index + 1); // Adjust to get the correct date
-        return date.toLocaleDateString('nl-NL'); // Get the full date string in dd-MM-yyyy format
+        date.setDate(date.getDate() - date.getDay() + index + 1);
+        return date.toLocaleDateString('nl-NL');
     });
 
     const openModal = (employeeId: number, date: string) => {
-        setSelectedEmployee(employeeId.toString()); // Sla het id op als string
+        const selectedDateObj = new Date(date.split('-').reverse().join('-')); // Convert to Date object
+        const today = new Date();
+
+        // Prevent editing for past dates
+        if (selectedDateObj < today) {
+            alert("You cannot add or modify times in the past.");
+            return;
+        }
+
+        // Prevent editing if a work time already exists
+        if (workTimes[employeeId]?.[date]) {
+            alert("Work time for this date is already set and cannot be changed.");
+            return;
+        }
+
+        setSelectedEmployee(employeeId.toString());
         setSelectedDate(date);
         setIsModalOpen(true);
     };
+
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -104,9 +145,23 @@ const RoosterContent: React.FC = () => {
                     [selectedDate]: `${startTime} - ${endTime}`,
                 },
             }));
+
+            // Voeg de nieuwe ingevoerde tijd toe aan de 'modifiedWorkTimes' zodat deze verzonden kan worden
+            setModifiedWorkTimes((prevModifiedWorkTimes) => ({
+                ...prevModifiedWorkTimes,
+                [selectedEmployee]: {
+                    ...prevModifiedWorkTimes[selectedEmployee],
+                    [selectedDate]: `${startTime} - ${endTime}`,
+                },
+            }));
         }
+
+        // Sluit de modal na het invoeren
         closeModal();
     };
+
+
+
 
     const handleSendPlanning = async () => {
         try {
@@ -115,7 +170,7 @@ const RoosterContent: React.FC = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(workTimes),
+                body: JSON.stringify(modifiedWorkTimes), // Only send modified work times
             });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
