@@ -16,12 +16,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
+//
 function getCurrentWeek(date: Date): number {
     const oneJan = new Date(date.getFullYear(), 0, 1);
     const numberOfDays = Math.floor((date.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000));
     return Math.ceil((numberOfDays + oneJan.getDay() + 1) / 7);
 }
 
+// Functie om de weekdagen te berekenen
 function getWeekDateRange(date: Date): string {
     const currentDate = new Date(date);
     const dayOfWeek = currentDate.getDay();
@@ -59,6 +61,7 @@ const RoosterContent: React.FC = () => {
         setDateRange(getWeekDateRange(currentDate));
     }, [currentDate]);
 
+    // Werknemers ophalen van de backend
     useEffect(() => {
         async function loadEmployeeData() {
             try {
@@ -76,6 +79,7 @@ const RoosterContent: React.FC = () => {
         loadEmployeeData();
     }, []);
 
+    // Werktijden ophalen van de backend
     useEffect(() => {
         async function loadWorkTimes() {
             try {
@@ -114,6 +118,8 @@ const RoosterContent: React.FC = () => {
         setCurrentDate(new Date());
     };
 
+
+    // Datum wijzigen
     const handleDateChange = (date: Date | undefined) => {
         if (date) {
             setCurrentDate(date);
@@ -122,6 +128,8 @@ const RoosterContent: React.FC = () => {
         }
     };
 
+
+    // Weekdagen berekenen
     const weekdays = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
     const weekDates = weekdays.map((_, index) => {
         const date = new Date(currentDate);
@@ -131,6 +139,8 @@ const RoosterContent: React.FC = () => {
         return firstDayOfWeek.toLocaleDateString('nl-NL');
     });
 
+
+    // Modal openen en data doorgeven
     const openModal = (employeeId: number, date: string) => {
         const selectedDateObj = new Date(date.split('-').reverse().join('-')); // Date object
         const today = new Date();
@@ -147,10 +157,13 @@ const RoosterContent: React.FC = () => {
         setIsModalOpen(true);
     };
 
+
+    // Modal sluiten
     const closeModal = () => {
         setIsModalOpen(false);
     };
 
+    // Tijden toevoegen of wijzigen
     const handleSubmit = (startTime: string, endTime: string) => {
         if (selectedEmployee && selectedDate) {
             setModifiedWorkTimes((prevModifiedWorkTimes) => ({
@@ -165,6 +178,7 @@ const RoosterContent: React.FC = () => {
         closeModal();
     };
 
+    // planning versturen naar de backend
     const handleSendPlanning = async () => {
         try {
             const response = await fetch("https://localhost:44355/api/WorkTime", {
@@ -261,7 +275,7 @@ const RoosterContent: React.FC = () => {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Onjuiste actie</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Je kunt geen tijden toevoegen of wijzigen voor de huidige datum of een datum in het verleden.
+                            Je kunt geen tijden toevoegen of wijzigen voor een datum in het verleden.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
