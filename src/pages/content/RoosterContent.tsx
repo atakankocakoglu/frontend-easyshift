@@ -147,7 +147,7 @@ const RoosterContent: React.FC = () => {
         today.setHours(0, 0, 0, 0);
 
         // Voorkom bewerken voor oude data
-        if (selectedDateObj < today) {
+        if (selectedDateObj <= today) {
             setIsPastDateAlertOpen(true);
             return;
         }
@@ -275,7 +275,7 @@ const RoosterContent: React.FC = () => {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Onjuiste actie</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Je kunt geen tijden toevoegen of wijzigen voor een datum in het verleden.
+                            Je kunt geen tijden toevoegen of wijzigen voor de huidige datum of een datum in het verleden.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
