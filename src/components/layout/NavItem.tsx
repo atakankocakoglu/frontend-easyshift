@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { IconType } from 'react-icons';
 
 interface NavItemProps {
@@ -9,6 +9,11 @@ interface NavItemProps {
 }
 
 const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, isActive, onClick }) => {
+    useEffect(() => {
+        if (isActive) {
+            document.title = `EasyShift | ${label}`;
+        }
+    }, [isActive, label]);
     return (
         <a
             href="#"
