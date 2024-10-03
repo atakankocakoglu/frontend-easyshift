@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import API_BASE_URL from "@/config.ts";
 
 interface Werknemer {
     id: number;
@@ -17,7 +18,7 @@ function WerknemersContent() {
     useEffect(() => {
         async function loadEmployeeData() {
             try {
-                const result = await fetch("https://localhost:44355/api/Employees");
+                const result = await fetch(`${API_BASE_URL}/Employees`);
                 if (!result.ok) {
                     throw new Error(`HTTP error! status: ${result.status}`);
                 }

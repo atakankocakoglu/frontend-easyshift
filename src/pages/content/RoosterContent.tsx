@@ -15,6 +15,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import API_BASE_URL from "@/config.ts";
 
 //
 function getCurrentWeek(date: Date): number {
@@ -65,7 +66,7 @@ const RoosterContent: React.FC = () => {
     useEffect(() => {
         async function loadEmployeeData() {
             try {
-                const result = await fetch("https://localhost:44355/api/Employees");
+                const result = await fetch(`${API_BASE_URL}/Employees`);
                 if (!result.ok) {
                     throw new Error(`HTTP error! status: ${result.status}`);
                 }
@@ -83,7 +84,7 @@ const RoosterContent: React.FC = () => {
     useEffect(() => {
         async function loadWorkTimes() {
             try {
-                const result = await fetch("https://localhost:44355/api/WorkTime/worktimes");
+                const result = await fetch(`${API_BASE_URL}/WorkTime/worktimes`);
                 if (!result.ok) {
                     throw new Error(`HTTP error! status: ${result.status}`);
                 }
@@ -142,13 +143,18 @@ const RoosterContent: React.FC = () => {
 
     // Modal openen en data doorgeven
     const openModal = (employeeId: number, date: string) => {
-        const selectedDateObj = new Date(date.split('-').reverse().join('-')); // Date object
+        const [day, month, year] = date.split('-').map(Number);
+        const selectedDateObj = new Date(year, month - 1, day); // Date object
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
+        console.log("Selected Date:", selectedDateObj);
+        console.log("Today's Date:", today);
+
         // Voorkom bewerken voor oude data
-        if (selectedDateObj <= today) {
+        if (selectedDateObj.getTime() <= today.getTime()) {
             setIsPastDateAlertOpen(true);
+            console.log("Cannot edit past dates");
             return;
         }
 
@@ -181,7 +187,7 @@ const RoosterContent: React.FC = () => {
     // planning versturen naar de backend
     const handleSendPlanning = async () => {
         try {
-            const response = await fetch("https://localhost:44355/api/WorkTime", {
+            const response = await fetch(`${API_BASE_URL}/WorkTime`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

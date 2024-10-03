@@ -5,17 +5,19 @@ import Rooster from '../../pages/Rooster.tsx';
 import Verlof from '../../pages/Verlof.tsx';
 import Werknemers from '../../pages/Werknemers.tsx';
 import Bedrijf from '../../pages/Bedrijf.tsx';
+import API_BASE_URL from "@/config.ts";
 
 function Home() {
     const [activePage, setActivePage] = useState('Dashboard');
     const [userName, setUserName] = useState<string>('');
+
 
     useEffect(() => {
         const fetchUserName = async () => {
             const userId = sessionStorage.getItem('userId');
             if (userId) {
                 try {
-                    const response = await fetch(`https://localhost:44355/api/Admin/${userId}`, {
+                    const response = await fetch(`${API_BASE_URL}/Admin/${userId}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
