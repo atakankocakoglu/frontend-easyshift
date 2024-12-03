@@ -1,23 +1,20 @@
-# Kies een basisafbeelding, bijvoorbeeld een Node.js-afbeelding
-FROM node:18
+# Gebruik een officiële Node.js runtime als basis image
+FROM node:18-alpine
 
-# Zet de werkdirectory
-WORKDIR /app
+# Stel de werkdirectory in voor de app
+WORKDIR /usr/src/app
 
-# Kopieer de package.json en package-lock.json eerst (voor caching van dependencys)
+# Kopieer package.json en package-lock.json (of yarn.lock) naar de werkdirectory
 COPY package*.json ./
 
 # Installeer de dependencies
 RUN npm install
 
-# Kopieer de rest van de applicatiebestanden
+# Kopieer de rest van de applicatie
 COPY . .
 
-# Bouw de applicatie als dat nodig is (bijvoorbeeld voor TypeScript, React, etc.)
-RUN npm run build
+# Stel het commando in om je app te starten
+CMD ["npm", "start"]
 
-# Open de poort waarop de app draait
+# Stel de poort in die de container gebruikt
 EXPOSE 3000
-
-# Start de applicatie
-CMD ["npm", "run", "dev"]
