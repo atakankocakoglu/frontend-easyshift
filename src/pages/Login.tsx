@@ -42,7 +42,7 @@ function Login() {
         <section className="background">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                 <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-                    <img className="logo w-80 h-50 mr-2" src='../../public/EasyShift_Transparant.png' alt="logo"/>
+                    <img className="logo w-80 h-50 mr-2" src='/EasyShift_Transparant.png' alt="logo"/>
                 </a>
                 <div
                     className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
