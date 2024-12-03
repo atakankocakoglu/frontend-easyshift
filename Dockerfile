@@ -18,6 +18,3 @@ RUN npm run build
 
 # Open de poort waarop de app draait
 EXPOSE 3000
-
-# Start de applicatie
-CMD ["npm", "start"]
