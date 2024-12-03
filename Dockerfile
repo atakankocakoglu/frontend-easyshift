@@ -1,29 +1,26 @@
-# Gebruik een node image om de app te bouwen
+# Stage 1: Build the app
 FROM node:18-alpine AS build
 
-# Stel de werkdirectory in voor de app
+# Stel de werkdirectory in
 WORKDIR /usr/src/app
 
 # Kopieer de package.json en package-lock.json
 COPY package*.json ./
 
-# Installeer de dependencies
+# Installeer de afhankelijkheden
 RUN npm install
 
-# Kopieer de rest van de applicatie
+# Kopieer de rest van de broncode naar de container
 COPY . .
 
-# Bouw de productieversie van de applicatie
+# Bouw de app voor productie
 RUN npm run build
 
-# Gebruik een Nginx webserver om de app te serveren
+# Stage 2: Serve the app with Nginx
 FROM nginx:alpine
 
-# Kopieer de gecompileerde bestanden van de build-fase naar de nginx container
-COPY --from=build /usr/src/app/build /usr/share/nginx/html
+# Kopieer de gecompileerde bestanden van de build-fase naar de Nginx container
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 
 # Stel de juiste poort in
 EXPOSE 80
-
-# Start Nginx om de app te serveren
-CMD ["nginx", "-g", "daemon off;"]
