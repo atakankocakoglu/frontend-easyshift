@@ -14,7 +14,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavItemClick, activePage, userName 
         <div className="flex flex-col h-screen w-64 p-4 bg-[#0084D4]">
             {/* Logo */}
             <div className="flex items-center justify-center mb-4">
-                <img src="../../../public/EasyShift_Transparant.png" alt="logo" className="w-27 h-25" />
+                <img src="/EasyShift_Transparant.png" alt="logo" className="w-27 h-25" />
             </div>
             <hr className="border-white mb-4" />
 
