@@ -187,16 +187,35 @@ const RoosterContent: React.FC = () => {
     // planning versturen naar de backend
     const handleSendPlanning = async () => {
         try {
+            console.log("Modified work times:", modifiedWorkTimes);
+
+            // Convert dates to the expected format (YYYY-MM-DD)
+            const formattedWorkTimes = Object.keys(modifiedWorkTimes).reduce((acc, employeeId) => {
+                acc[employeeId] = Object.keys(modifiedWorkTimes[employeeId]).reduce((dateAcc, dateKey) => {
+                    const [day, month, year] = dateKey.split('-').map(Number);
+                    const formattedDate = new Date(year, month - 1, day).toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+                    dateAcc[formattedDate] = modifiedWorkTimes[employeeId][dateKey];
+                    return dateAcc;
+                }, {} as { [key: string]: string });
+                return acc;
+            }, {} as { [key: string]: { [key: string]: string } });
+
             const response = await fetch(`${API_BASE_URL}/WorkTime`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(modifiedWorkTimes), // Send modified work times
+                body: JSON.stringify(formattedWorkTimes), // Send formatted work times
             });
+
+            console.log("Response status:", response.status);
+
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error("HTTP error response text:", errorText);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+
             console.log("Planning successfully sent!");
 
             // Merge modifiedWorkTimes into workTimes after a successful post request
