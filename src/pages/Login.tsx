@@ -1,7 +1,7 @@
 import '/public/css/Login.css';
 import { useNavigate } from 'react-router-dom';
 import {useState} from "react";
-import API_BASE_URL from "@/config.ts";
+// import API_BASE_URL from "@/config.ts";
 
 function Login() {
     const navigate = useNavigate();
@@ -11,7 +11,7 @@ function Login() {
         event.preventDefault();
         setErrorMessage(null);
         try {
-            const response = await fetch(`${API_BASE_URL}/Admin/login`, {
+            const response = await fetch(`https://backend-easyshift.atakankocakoglu.nl/api/Admin/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
