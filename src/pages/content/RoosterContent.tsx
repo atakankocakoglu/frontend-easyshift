@@ -193,12 +193,14 @@ const RoosterContent: React.FC = () => {
             const formattedWorkTimes = Object.keys(modifiedWorkTimes).reduce((acc, employeeId) => {
                 acc[employeeId] = Object.keys(modifiedWorkTimes[employeeId]).reduce((dateAcc, dateKey) => {
                     const [day, month, year] = dateKey.split('-').map(Number);
-                    const formattedDate = new Date(year, month - 1, day).toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+                    const formattedDate = new Date(Date.UTC(year, month - 1, day)).toISOString().split('T')[0]; // Convert to YYYY-MM-DD
                     dateAcc[formattedDate] = modifiedWorkTimes[employeeId][dateKey];
                     return dateAcc;
                 }, {} as { [key: string]: string });
                 return acc;
             }, {} as { [key: string]: { [key: string]: string } });
+
+            console.log("Formatted work times:", formattedWorkTimes);
 
             const response = await fetch(`${API_BASE_URL}/WorkTime`, {
                 method: "POST",
@@ -215,6 +217,15 @@ const RoosterContent: React.FC = () => {
                 console.error("HTTP error response text:", errorText);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+
+            const contentType = response.headers.get("Content-Type");
+            let responseData;
+            if (contentType && contentType.includes("application/json")) {
+                responseData = await response.json();
+            } else {
+                responseData = await response.text();
+            }
+            console.log("Response data:", responseData);
 
             console.log("Planning successfully sent!");
 
